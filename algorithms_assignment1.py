@@ -1,6 +1,8 @@
 #100870670
 #Atheeq Mazarik
 
+import time
+
 def productData(file_path):
     products = {}
 
@@ -10,12 +12,12 @@ def productData(file_path):
                 if not line.strip():  # Skip empty lines
                     continue
 
-                product_info = [info.strip() for info in line.strip().split(',')]
+                productDesc = [info.strip() for info in line.strip().split(',')]
                 product = {
-                    'ID': int(product_info[0]),
-                    'Name': product_info[1],
-                    'Price': float(product_info[2]),
-                    'Category': product_info[3]
+                    'ID': int(productDesc[0]),
+                    'Name': productDesc[1],
+                    'Price': float(productDesc[2]),
+                    'Category': productDesc[3]
                 }
                 products[product['ID']] = product
     except FileNotFoundError:
@@ -33,12 +35,12 @@ def productDataUpdate(products, file_path):
     except IOError:
         print(f"Error: Unable to write to file '{file_path}'.")
 
-def insertProduct(products, new_product):
-    products[new_product['ID']] = new_product
+def insertProduct(products, newProduct):
+    products[newProduct['ID']] = newProduct
 
-def updateProduct(products, product_id, updated_info):
+def updateProduct(products, product_id, updatedProductDesc):
     if product_id in products:
-        products[product_id].update(updated_info)
+        products[product_id].update(updatedProductDesc)
         print(f"Product ID {product_id} has been updated successfully!")
     else:
         print(f"Error: Product with ID {product_id} not found.")
@@ -81,21 +83,21 @@ while True:
     choice = input("Enter your choice (1-6): ")
 
     if choice == '1':
-        new_product = {
+        newProduct = {
             'ID': int(input("Enter ID: ")),
             'Name': input("Enter Name: "),
             'Price': float(input("Enter Price: ")),
             'Category': input("Enter Category: ")
         }
-        insertProduct(product_data, new_product)
+        insertProduct(product_data, newProduct)
         productDataUpdate(product_data, file_path)
 
     elif choice == '2':
         product_id = int(input("Enter the product ID to update: "))
-        updated_info = {
+        updatedProductDesc = {
             'Price': float(input("Enter the updated Price: "))
         }
-        updateProduct(product_data, product_id, updated_info)
+        updateProduct(product_data, product_id, updatedProductDesc)
         productDataUpdate(product_data, file_path)
 
     elif choice == '3':
@@ -104,16 +106,23 @@ while True:
         productDataUpdate(product_data, file_path)
 
     elif choice == '4':
-        search_key = input("Enter search key for products ('ID', 'Name', 'Price', or 'Category'): ")
+        search_key = input("Enter search key for products ('ID', 'Name', 'Price', 'Category'): ")
         search_value = input("Enter the search value for the search key: ")
         found_products = searchProduct(product_data, search_key, search_value)
         print("Found Products:", found_products)
 
     elif choice == '5':
-        sort_order = input("Enter 'asc' to sort by ascending order. Enter 'desc' to sort descending order: ").lower()
-        sorted_product_data = bubbleSortProduct(list(product_data.values()), key='Price', reverse=(sort_order == 'desc'))
-        print(f"Sorted Product Data by Price ({sort_order}ending order):")
-        for product in sorted_product_data:
+        bubbleSortInput = input("Enter 'asc' for ascending or 'desc' for descending order: ").lower()
+
+        sortedProductData = list(product_data.values())
+        startTime = time.time()
+        bubbleSortProduct(sortedProductData, key='Price', reverse=(bubbleSortInput == 'desc'))
+        endTime = time.time()
+        
+        print(f"Sorting time for {len(sortedProductData)} records in {bubbleSortInput}ending order: {endTime - startTime:.6f} seconds")
+        
+        print(f"Sorted Product Data by Price ({bubbleSortInput}ending order):")
+        for product in sortedProductData:
             print(f"ID: {product['ID']}, Name: {product['Name']}, Price: {product['Price']}, Category: {product['Category']}")
 
     elif choice == '6':
