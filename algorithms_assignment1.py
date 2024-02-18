@@ -1,6 +1,3 @@
-#100870670
-#Atheeq Mazarik
-
 import time
 
 def productData(file_path):
@@ -53,20 +50,29 @@ def deleteProduct(products, product_id):
         print(f"Error: Product with ID {product_id} not found.")
 
 def searchProduct(products, key, value):
-    found_products = [product.copy() for product in products.values() if product.get(key) == value]
-    for product in found_products:
+    foundProducts = [product.copy() for product in products.values() if product.get(key) == value]
+    for product in foundProducts:
+        product['ID'] = product['ID']
+        product['Name'] = product['Name'].strip()
+        product['Price'] = product['Price']
         product['Category'] = product['Category'].strip()
-    return found_products
+        
+    return foundProducts
 
 def bubbleSortProduct(arr, key='Price', reverse=False):
     n = len(arr)
     for i in range(n - 1):
         for j in range(0, n - i - 1):
-            if not reverse and arr[j][key] > arr[j + 1][key]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-            elif reverse and arr[j][key] < arr[j + 1][key]:
+            should_swap = arr[j][key] > arr[j + 1][key] if not reverse else arr[j][key] < arr[j + 1][key]
+            if should_swap:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
     return arr
+
+def printProductList(products):
+    print("\nProduct List:")
+    for product in products.values():
+        print(f"ID: {product['ID']}, Name: {product['Name']}, Price: {product['Price']}, Category: {product['Category']}")
+    print()
 
 while True:
     file_path = 'product_data.txt'
@@ -91,37 +97,69 @@ while True:
         }
         insertProduct(product_data, newProduct)
         productDataUpdate(product_data, file_path)
+        print("\nInserted Product:")
+        print(newProduct)
+        printProductList(product_data)
 
     elif choice == '2':
         product_id = int(input("Enter the product ID to update: "))
         updatedProductDesc = {
-            'Price': float(input("Enter the updated Price: "))
+            'ID': int(input("Enter the updated ID: ")),
+            'Name': input("Enter the updated Name: "),
+            'Price': float(input("Enter the updated Price: ")),
+            'Category': input("Enter the updated Category: ")
         }
         updateProduct(product_data, product_id, updatedProductDesc)
         productDataUpdate(product_data, file_path)
+        print("\nUpdated Product:")
+        print(product_data[product_id])
+        printProductList(product_data)
 
     elif choice == '3':
         product_id = int(input("Enter the product ID to delete: "))
+        deleted_product = product_data.get(product_id, {})
         deleteProduct(product_data, product_id)
         productDataUpdate(product_data, file_path)
+        print("\nDeleted Product:")
+        print(deleted_product)
+        printProductList(product_data)
 
     elif choice == '4':
-        search_key = input("Enter search key for products ('ID', 'Name', 'Price', 'Category'): ")
-        search_value = input("Enter the search value for the search key: ")
-        found_products = searchProduct(product_data, search_key, search_value)
-        print("Found Products:", found_products)
+        searchDesc = input("Enter search descriptor for products ('ID', 'Name', 'Price', 'Category'): ")
+
+        if searchDesc == "Name" or searchDesc == "Category":
+            searchValue = input("Enter the search value for the chosen descriptor: ")
+            foundProducts = searchProduct(product_data, searchDesc, searchValue)
+            print("\nFound Products:", foundProducts)
+        
+        if searchDesc == "ID":
+            searchValue = int(input("Enter the search value for the chosen descriptor: "))
+            foundProducts = searchProduct(product_data, searchDesc, searchValue)
+            print("\nFound Products:", foundProducts)
+        
+        if searchDesc == "Price":
+            searchValue = float(input("Enter the search value for the chosen descriptor: "))
+            foundProducts = searchProduct(product_data, searchDesc, searchValue)
+            print("\nFound Products:", foundProducts)
 
     elif choice == '5':
-        bubbleSortInput = input("Enter 'asc' for ascending or 'desc' for descending order: ").lower()
-
         sortedProductData = list(product_data.values())
+
         startTime = time.time()
-        bubbleSortProduct(sortedProductData, key='Price', reverse=(bubbleSortInput == 'desc'))
+        bubbleSortProduct(sortedProductData, key='Price', reverse=False)
         endTime = time.time()
         
-        print(f"Sorting time for {len(sortedProductData)} records in {bubbleSortInput}ending order: {endTime - startTime:.6f} seconds")
-        
-        print(f"Sorted Product Data by Price ({bubbleSortInput}ending order):")
+        print(f"\nSorting time for Bubble Sort: {endTime - startTime:.6f} seconds")
+        print(f"Sorted Product Data by Price (ascending order):")
+        for product in sortedProductData:
+            print(f"ID: {product['ID']}, Name: {product['Name']}, Price: {product['Price']}, Category: {product['Category']}")
+                
+        startTime = time.time()
+        bubbleSortProduct(sortedProductData, key='Price', reverse=True)
+        endTime = time.time()
+
+        print(f"\nSorting time for Bubble Sort (Reverse): {endTime - startTime:.6f} seconds")
+        print(f"Sorted Product Data by Price (descending order):")
         for product in sortedProductData:
             print(f"ID: {product['ID']}, Name: {product['Name']}, Price: {product['Price']}, Category: {product['Category']}")
 
@@ -131,3 +169,4 @@ while True:
 
     else:
         print("Invalid choice. Enter a number between 1 and 6.")
+
