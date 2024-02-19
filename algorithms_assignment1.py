@@ -159,7 +159,7 @@ while True:
         endTime = time.time()
 
         print(f"\nSorting time for Bubble Sort (Reverse): {endTime - startTime:.6f} seconds")
-        print(f"Sorted Product Data by Price (descending order):")
+        print(f"Sorted Product Data by Price (reverse order):")
         for product in sortedProductData:
             print(f"ID: {product['ID']}, Name: {product['Name']}, Price: {product['Price']}, Category: {product['Category']}")
 
