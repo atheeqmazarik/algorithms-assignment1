@@ -1,8 +1,9 @@
+#100870670 #Atheeq Mazarik
+
 import time
 
 def productData(file_path):
     products = {}
-
     try:
         with open(file_path, 'r') as file:
             for line in file:
@@ -18,11 +19,10 @@ def productData(file_path):
                 }
                 products[product['ID']] = product
     except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
-    
+        print(f"Error: File '{file_path}' not found.") 
     return products
 
-def productDataUpdate(products, file_path):
+def loadProductData(products, file_path):
     try:
         with open(file_path, 'w') as file:
             for product_id, product in products.items():
@@ -63,8 +63,8 @@ def bubbleSortProduct(arr, key='Price', reverse=False):
     n = len(arr)
     for i in range(n - 1):
         for j in range(0, n - i - 1):
-            should_swap = arr[j][key] > arr[j + 1][key] if not reverse else arr[j][key] < arr[j + 1][key]
-            if should_swap:
+            swap = arr[j][key] > arr[j + 1][key] if not reverse else arr[j][key] < arr[j + 1][key]
+            if swap:
                 arr[j], arr[j + 1] = arr[j + 1], arr[j]
     return arr
 
@@ -96,7 +96,7 @@ while True:
             'Category': input("Enter Category: ")
         }
         insertProduct(product_data, newProduct)
-        productDataUpdate(product_data, file_path)
+        loadProductData(product_data, file_path)
         print("\nInserted Product:")
         print(newProduct)
         printProductList(product_data)
@@ -110,7 +110,7 @@ while True:
             'Category': input("Enter the updated Category: ")
         }
         updateProduct(product_data, product_id, updatedProductDesc)
-        productDataUpdate(product_data, file_path)
+        loadProductData(product_data, file_path)
         print("\nUpdated Product:")
         print(product_data[product_id])
         printProductList(product_data)
@@ -119,7 +119,7 @@ while True:
         product_id = int(input("Enter the product ID to delete: "))
         deleted_product = product_data.get(product_id, {})
         deleteProduct(product_data, product_id)
-        productDataUpdate(product_data, file_path)
+        loadProductData(product_data, file_path)
         print("\nDeleted Product:")
         print(deleted_product)
         printProductList(product_data)
